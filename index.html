@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mr. Elbow's Goof Inventory — Wine</title>
+<style>
+  :root{
+    --cream:#faf3e7; --ink:#2b2118; --wine:#7a1f2b; --wine2:#a63d40;
+    --gold:#c98a2b; --sage:#7d8c6f; --card:#fffdf8; --line:#e8dcc8;
+    --rose:#d97b7b; --orange:#d9822b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--cream);color:var(--ink);
+    font-family:Georgia,'Iowan Old Style',serif;line-height:1.55}
+  header{padding:2.2rem 1.2rem 1.4rem;text-align:center;
+    background:linear-gradient(160deg,#3d1220,#7a1f2b 60%,#a63d40);color:#fdf6ea}
+  header h1{margin:0;font-size:clamp(1.9rem,5vw,3rem);letter-spacing:.5px}
+  header p{margin:.5rem auto 0;max-width:640px;opacity:.92;font-style:italic}
+  .stats{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;
+    padding:1rem 1rem 0}
+  .stat{background:#fff;border:1px solid var(--line);border-radius:999px;
+    padding:.35rem .9rem;font-size:.9rem}
+  .stat b{color:var(--wine)}
+  main{max-width:1080px;margin:0 auto;padding:1rem 1rem 3rem}
+  h2{font-size:1.4rem;margin:2rem 0 .4rem;color:var(--wine)}
+  h2 + p{margin-top:0}
+  .filters{display:flex;flex-wrap:wrap;gap:.5rem;margin:1rem 0}
+  .filters button{font-family:inherit;font-size:.95rem;cursor:pointer;
+    border:1.5px solid var(--wine);background:#fff;color:var(--wine);
+    border-radius:999px;padding:.45rem 1rem}
+  .filters button.on{background:var(--wine);color:#fff}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.1rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;
+    overflow:hidden;display:flex;flex-direction:column;
+    box-shadow:0 2px 8px rgba(43,33,24,.06)}
+  .card.mystery{border:2px dashed var(--gold);background:#fffaf0}
+  .photo{height:300px;background:#efe6d4;display:flex;justify-content:center;overflow:hidden}
+  .photo img{height:100%;width:auto;object-fit:cover}
+  .body{padding:1rem 1.1rem 1.2rem;display:flex;flex-direction:column;gap:.55rem;flex:1}
+  .eyebrow{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--wine2)}
+  .card h3{margin:0;font-size:1.2rem;line-height:1.25}
+  .sub{font-size:.92rem;color:#6b5a48}
+  .tldr{background:#f6ead6;border-left:4px solid var(--gold);
+    padding:.55rem .7rem;font-style:italic;border-radius:0 8px 8px 0}
+  .score{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap}
+  .badge{background:var(--wine);color:#fff;border-radius:999px;
+    padding:.15rem .7rem;font-weight:bold;font-size:.95rem}
+  .badge.myst{ background:var(--gold); }
+  .price{font-weight:bold}
+  .meters{display:grid;grid-template-columns:1fr 1fr;gap:.25rem .9rem;font-size:.88rem}
+  .meters .row{display:flex;justify-content:space-between;gap:.5rem}
+  .dots{letter-spacing:1px;color:var(--wine);white-space:nowrap}
+  .dots .off{color:#d8cbb6}
+  .label{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:#8a7a66}
+  .learn{background:#eef0e6;border-radius:8px;padding:.55rem .7rem;font-size:.92rem}
+  .learn b{color:#4d5c3f}
+  .tags{display:flex;flex-wrap:wrap;gap:.35rem}
+  .tags span{background:#f1e7d6;border-radius:999px;padding:.1rem .6rem;font-size:.8rem}
+  .meta{font-size:.88rem;color:#6b5a48}
+  .src{font-size:.8rem;color:#9a8a76}
+  .fridge{background:#2b2118;color:#f3e9d8;border-radius:16px;padding:1.2rem 1.3rem;margin-top:1rem}
+  .fridge h2{color:#f0c98a;margin-top:0}
+  .shelf{border:2px solid #6b543a;border-radius:10px;padding:.7rem .9rem;margin:.6rem 0;background:#3a2d20}
+  .shelf b{color:#f0c98a}
+  .shelf .who{font-size:.95rem}
+  .glossary{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.7rem}
+  .glossary div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.7rem .9rem}
+  .glossary b{color:var(--wine)}
+  footer{max-width:1080px;margin:0 auto;padding:0 1rem 2.5rem;color:#8a7a66;font-size:.85rem}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>🍷 Mr. Elbow's Goof Inventory</h1>
+  <p>A working wine list for a guy learning as he drinks. Every bottle gets a TLDR, a fun story, and a little lesson — because the best way to learn wine is one glass at a time.</p>
+</header>
+
+<div class="stats">
+  <span class="stat"><b>14</b> bottles</span>
+  <span class="stat"><b>5</b> countries — France, Spain, Austria, Slovakia, USA</span>
+  <span class="stat"><b>≈ $350</b> total (12 priced bottles)</span>
+  <span class="stat"><b>3</b> mystery bottles need your help</span>
+  <span class="stat">Updated <b>Nov 9, 2026</b></span>
+</div>
+
+<main>
+  <div class="filters" id="filters">
+    <button data-f="all" class="on">All 14</button>
+    <button data-f="white">White</button>
+    <button data-f="red">Red</button>
+    <button data-f="rose">Rosé &amp; Orange</button>
+    <button data-f="mystery">🔍 Mysteries</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <h2>🍇 Wine school, one card at a time</h2>
+  <p>Shawn asked what to expect from each bottle — acid, tannins, minerality. Here's the cheat sheet, then every card below puts it into practice.</p>
+  <div class="glossary">
+    <div><b>Acidity</b> — the mouthwatering zing. High acid = crisp, fresh, makes your mouth water (think lemonade). Low acid = soft, round, flabby if too low. Most of this collection is high-acid — that's the natural-wine style.</div>
+    <div><b>Tannins</b> — the drying, grippy feeling on your tongue and gums, like strong black tea. Comes from grape skins, seeds, and stems. Big in young reds, almost zero in whites. Chill and food both soften tannins.</div>
+    <div><b>Minerality</b> — the stony, salty, chalky, wet-rock character. Scientists argue about whether it's real; drinkers know it when they taste it. Volcanic and limestone soils (Auvergne, Tenerife, Beaujolais) show it most.</div>
+    <div><b>Body</b> — how heavy the wine feels in your mouth. Light = skim milk, medium = whole milk, full = cream. Alcohol, fruit ripeness, and oak all add weight.</div>
+    <div><b>Skin contact / orange wine</b> — white grapes fermented with their skins, like a red. That's where the amber color, extra texture, and gentle tannin come from. Not a flavor — a method.</div>
+    <div><b>Carbonic maceration</b> — whole grapes ferment inside their own skins before crushing, giving bubblegum, banana, and bright cherry notes. The Beaujolais trick — and the secret behind Glou Glou and Fred.</div>
+    <div><b>Natural wine</b> — farmed organically, fermented with native yeasts, little or no added sulfur, unfined and unfiltered. Livelier and more variable — drink sooner, keep cool, expect a little funk.</div>
+    <div><b>Zero-zero</b> — nothing added, nothing taken away. The most hardcore natural style. Superbloom is one. These are the most fragile bottles in the fridge — drink them first.</div>
+  </div>
+
+  <h2>🧊 The small-fridge plan</h2>
+  <p>Fourteen bottles, one small fridge. The good news: almost everything here is a <b>drink-now</b> wine. Natural wines with little sulfur don't reward waiting — they reward opening.</p>
+  <div class="fridge">
+    <h2>How to stack it</h2>
+    <p style="margin-top:0">Set the fridge to <b>55°F (13°C)</b> — the one temperature that keeps every style happy. Then give whites and chillable reds a 20–30 minute stint in the kitchen fridge before opening to get them down to serving temp.</p>
+    <div class="shelf"><b>TOP SHELF — drink next (coldest spot, front row)</b><br>
+      <span class="who">Gulp Hablo Orange · Superbloom · La Araucaria Rosado · Glou Glou · Gulp Hablo Garnacha — the chillable crew. Serve 45–55°F. These are your Tuesday-to-Friday bottles.</span></div>
+    <div class="shelf"><b>MIDDLE SHELF — the whites</b><br>
+      <span class="who">Muscadet Les Prières · Dupeuble Beaujolais Blanc · Aligoté Les Reteurs — serve 45–50°F. Label-out, so you can see at a glance what pairs with tonight's dinner.</span></div>
+    <div class="shelf"><b>BOTTOM / BACK — the waiters (the only ones allowed to linger)</b><br>
+      <span class="who">Diochon Moulin-à-Vent · Heinrich Graue Freyheit · Patrick Bouju "P" · Fred #12 — these can happily sit 6–18 months. Everything else: aim to drink within a year, sooner for the zero-sulfur bottles.</span></div>
+    <div class="shelf"><b>FRONT ROW, STANDING UP — the mysteries 🔍</b><br>
+      <span class="who">Cowboy Inn and the village bottle go where you'll see them every time you open the door — until you photograph their back labels and they get real names.</span></div>
+    <p><b>House rules:</b> cork bottles lie on their side (keeps the cork wet); crown-cap and screwcap bottles can stand. Keep the fridge out of direct sun and away from the oven. Don't age natural wine in the kitchen fridge long-term — it's too cold and dry. And keep one empty slot as the "drink next" slot, so the plan survives contact with reality.</p>
+  </div>
+
+  <h2>🔍 The mystery bottles</h2>
+  <p>Three bottles refused to introduce themselves — no producer or vintage on the front label. The back label knows the answer. Next time you open the fridge, snap the back of these two and they'll get promoted to full entries:</p>
+  <ul>
+    <li><b>The village bottle</b> (photo 1, right) — red, crown cap, wraparound cartoon label: a village under a red sky, grapes with sleepy faces.</li>
+    <li><b>Cowboy Inn</b> (photo 2, left) — red, full-photo label of a roadside motel sign.</li>
+    <li><b>Aligoté "Les Reteurs" 2022</b> — the wine is identified (100% Aligoté, Burgundy); only the producer's name is hiding on the back label.</li>
+  </ul>
+</main>
+
+<footer>
+  Prices are US retail ranges found Nov 9, 2026 (Vivino, Kermit Lynch, K&amp;L, MYSA, Primal Wine, Despaña, MORE Natural Wine, Jenny &amp; Francois). Where a price couldn't be verified it's marked as an estimate. Scores are Spaghetti's ratings (1–100) based on producer notes, retailer tasting notes, and community ratings — not tastings of these exact bottles. Vintages marked "not visible" weren't on the front label in the photo. Photos are Shawn's own bottle shots, cropped for the cards.
+</footer>
+
+<script>
+const WINES = [
+{
+  n:1, type:"white", img:"assets/01-muscadet.jpg",
+  name:"Domaine Batard Langelier, 'Les Prières'",
+  sub:"Muscadet Sèvre et Maine · France, Loire Valley · vintage not visible on front label (likely 2024)",
+  producer:"Domaine Batard Langelier (Jérémie Batard) · Maisdon-sur-Sèvre",
+  grapes:"100% Melon de Bourgogne", abv:"~12%", size:"750 ml", price:"~$19", score:91,
+  acid:5, tannin:0, mineral:5, body:2,
+  tldr:"A salty sea-breeze white that makes oysters taste like a good idea.",
+  fun:"This is the bottle that teaches you what 'minerality' actually means. It grows on granite in the Loire, ferments with native yeast, and spends seven months on its lees — the dead yeast left over from fermentation — which is why it feels a little creamy under all that zip. Organic, biodynamic, unfined, unfiltered. The winemaker's family has been at this for three generations, and it shows in the confidence: nothing added, nothing to hide.",
+  notes:"Lemon and green apple, sea salt and wet stone, brisk electric acidity, saline flinty finish, a whisper of lees creaminess.",
+  pairing:"Oysters, shellfish, sushi, goat cheese, fish and chips.", serve:"Chilled, 46–50°F.", drink:"Now–2029",
+  learn:"<b>Sur lie</b> = aged on the lees (dead yeast). It's the trick that gives lean wines a creamy middle without any oak.",
+  tags:["White","Dry","Organic","Biodynamic","Natural","Sur lie","Seafood wine","Value"],
+  src:"Skurnik Wines; Leon & Son $18; Oly Wines $20."
+},
+{
+  n:2, type:"red", img:"assets/02-gulp-garnacha.jpg",
+  name:"Gulp Hablo Garnacha",
+  sub:"Spain, Castilla-La Mancha (Las Mesas) · vintage not visible on front label",
+  producer:"Bodegas Parra Jiménez, with Juan Antonio Ponce",
+  grapes:"100% Garnacha (Grenache)", abv:"12%", size:"1 L", price:"~$20", score:88,
+  acid:3, tannin:2, mineral:2, body:2,
+  tldr:"A liter of juicy, chillable red that thinks it's a party trick.",
+  fun:"A liter bottle with a weightlifter on the label, and it lives up to the joke: this is the 'gulp' in Gulp/Hablo. Biodynamically farmed Garnacha from the high desert plateau of La Mancha, fermented in steel and concrete with no oak — just fruit, freshness, and a little pepper. Put it in the fridge for 20 minutes. Yes, red wine in the fridge. Trust the process.",
+  notes:"Juicy black cherry and tart cranberry, raspberry and cassis, violets and white pepper, round tannins, light fresh finish.",
+  pairing:"Grilled lamb, Manchego, pizza, burgers, tapas, picnic food.", serve:"Slightly chilled, 55–60°F.", drink:"Now–2027",
+  learn:"<b>Chillable red</b> isn't a flaw — light reds with low tannin and good acid taste better cool. If a red feels heavy, chill is usually the fix.",
+  tags:["Red","Chillable","Natural","Organic","Biodynamic","Vegan","1 liter","Everyday","Value"],
+  src:"T. Edward Wines; Vine & Branch $19.99; Heights $15.99 (2025)."
+},
+{
+  n:3, type:"rose", img:"assets/03-heinrich.jpg",
+  name:"Heinrich, 'Graue Freyheit' 2022",
+  sub:"Austria, Burgenland · 2022 on the label",
+  producer:"Weingut Heinrich (Gernot & Heike Heinrich)",
+  grapes:"60% Pinot Gris, 30% Pinot Blanc, 8% Neuburger, 2% Chardonnay", abv:"12%", size:"750 ml", price:"~$45", score:93,
+  acid:4, tannin:3, mineral:4, body:4,
+  tldr:"An amber wine in a clay bottle that drinks like a light red with a tea habit.",
+  fun:"The weirdest-looking bottle in the fridge, and the best wine in it. Skin-fermented whites aged 17 months in amphorae and oak, bottled in a ceramic steinzeugflasche — the same clay as the fermentation vessel — with no added sulfur. It smells like red berries and green tea and finishes like licking a wet stone in the best possible way. Decántalo gave the 2022 a 93 too, so it's not just me.",
+  notes:"Red berries and green tea, black-tea spice, dried herbs and stone fruit, intense precise texture, bright acidity, long mineral finish.",
+  pairing:"Roast chicken, pork, mushrooms, hard cheese, charcuterie, spiced dishes.", serve:"Cool, 54–57°F; decant briefly if it seems closed.", drink:"Now–2028",
+  learn:"<b>Orange wine</b> is white grapes made like red wine (skin contact). The color is amber, the texture is grippy, and it pairs with food like a red.",
+  tags:["Orange","Skin-contact","Natural","Biodynamic","Vegan","Unfined","No added sulfur","Amphora","Ceramic bottle"],
+  src:"Decántalo 93 pts, ~$35; Vivino 4.1/5; UK ~£45."
+},
+{
+  n:4, type:"red", img:"assets/04-fred.jpg",
+  name:"Strekov 1075, 'Fred #12'",
+  sub:"Slovakia, Nitra region · non-vintage blend (2023 + 2024)",
+  producer:"Strekov 1075 — Zsolt Sütó",
+  grapes:"55% Alibernet, 25% Dunaj, 20% Blauer Portugieser", abv:"13.5%", size:"750 ml", price:"~$30", score:90,
+  acid:3, tannin:3, mineral:3, body:3,
+  tldr:"Slovakia's friendliest red — juicy up front, then a tannic wink on the way out.",
+  fun:"Fred is the house red of a tiny Slovakian estate, and the F stands for — in the winemaker's own words — 'friendly, fresh, but also f*ing good.' It's a blend of vintages and local grapes you've probably never met: Alibernet for structure, Dunaj for fruit, Portugieser for freshness. Crown cap, zero sulfur, unfined and unfiltered. This #12 has more tannin than previous Freds, so it reads a touch more serious — but it's still a glugger at heart.",
+  notes:"Ripe plums, baked apple, blackberries, a hint of pepper and spice once it opens up.",
+  pairing:"Grilled sausage, roast pork, hard cheese, pizza night.", serve:"Cool room temp or a light chill, 55–60°F.", drink:"Now–2027",
+  learn:"<b>Alibernet and Dunaj</b> are local Slovak crosses (Alibernet = Alicante Bouschet × Cabernet Sauvignon). 'Local cross' grapes are the natural-wine world's best party trick.",
+  tags:["Red","Natural","Zero sulfur","Unfined","Unfiltered","Crown cap","Blend of vintages","Slovakia"],
+  src:"Jenny & Francois Selections (blend details); MORE Natural Wine €20."
+},
+{
+  n:5, type:"mystery", img:"assets/05-village.jpg",
+  name:"Mystery bottle #1 — the village",
+  sub:"Red wine · producer, grapes & vintage unknown",
+  producer:"Unknown — front label is all illustration, no text",
+  grapes:"Unknown", abv:"Unknown", size:"750 ml", price:"—", score:null,
+  acid:null, tannin:null, mineral:null, body:null,
+  tldr:"A red wearing a cartoon village and grapes with faces. Name: unknown. Vibe: immaculate.",
+  fun:"Red sky, black mountain, a little village with a tall church steeple, and a bunch of grapes with sleepy faces looking on. There is not a single word on the front of this label — the name, the grapes, the vintage, all of it is hiding on the back. It is, objectively, the coolest-looking bottle you own, and the least identified. Crown cap, dark red wine, 750 ml.",
+  notes:"Unknown until identified — but the crown cap and cartoon label say natural, low-sulfur, drink-soon red.",
+  pairing:"Unknown — guess: pizza, friends, curiosity.", serve:"Slightly chilled, 55–60°F.", drink:"Drink soon — natural wines don't wait",
+  learn:"<b>How to ID a mystery bottle:</b> the back label has the importer and producer. One photo of it and this card gets a real name.",
+  tags:["Mystery","Red","Crown cap","Natural (?)","Needs back-label photo"],
+  src:"Photo 1 (right bottle), Nov 9, 2026."
+},
+{
+  n:6, type:"rose", img:"assets/07-gulp-orange.jpg",
+  name:"Gulp Hablo Orange",
+  sub:"Spain, Castilla-La Mancha · 1 liter · vintage not visible (current release 2025)",
+  producer:"Bodegas Parra Jiménez / Bodegas Ponce",
+  grapes:"50% Verdejo, 50% Sauvignon Blanc", abv:"11%", size:"1 L", price:"~$26", score:89,
+  acid:4, tannin:2, mineral:4, body:3,
+  tldr:"A liter of orange wine that tastes like blood orange, honey, and a dare.",
+  fun:"Same weightlifter, different sport. This is the Gulp Hablo white blend given a week on its skins, which turns it orange, gives it a gentle tannic grip, and makes it taste like dried citrus peel, pekoe tea, and preserved apricots. At 11% alcohol and a liter a bottle, it's built for a long lunch. Certified biodynamic, and yes — chill it like a white.",
+  notes:"Orange blossom, blood orange and grapefruit, honey, dried citrus peel, tea, preserved apricot, fresh salinity, a touch of funky earth.",
+  pairing:"Grilled skewers, salmon, roast cauliflower, hummus, grilled squash.", serve:"Well chilled, 50–55°F.", drink:"Now–2027",
+  learn:"<b>Skin contact = tannin in a white.</b> That slight grip on your gums is the skins doing their work. It's why orange wine pairs with food like a red does.",
+  tags:["Orange","Skin-contact","Natural","Organic","Biodynamic","Vegan","1 liter","Chillable"],
+  src:"Champion Wine Cellars; Stranger Wines $25 (2025); Forresta $27."
+},
+{
+  n:7, type:"mystery", img:"assets/06-cowboy.jpg",
+  name:"Mystery bottle #2 — 'Cowboy Inn'",
+  sub:"Red wine · producer, grapes & vintage unknown",
+  producer:"Unknown — front label is a photograph, no producer text",
+  grapes:"Unknown", abv:"Unknown", size:"750 ml", price:"—", score:null,
+  acid:null, tannin:null, mineral:null, body:null,
+  tldr:"A red whose entire personality is a photograph of a motel. Respect.",
+  fun:"The whole label is a photo: a roadside motel sign reading COWBOY INN under a big blue sky, with a 'CAR CARE CAR WASH' sign for company. No producer, no grape, no vintage on the front — just vibes and a desert highway. Dark red wine in the bottle. Somebody made a wine, put a motel on it, and trusted you to figure out the rest. We accept the challenge.",
+  notes:"Unknown until identified — dark red, looks full and juicy.",
+  pairing:"Unknown — guess: barbecue, burgers, a road trip playlist.", serve:"Slightly chilled, 55–60°F.", drink:"Drink soon — check the back label first",
+  learn:"<b>Photo labels</b> are a natural-wine signature — the wine is the art, the back label is the paperwork. Always flip the bottle.",
+  tags:["Mystery","Red","Photo label","Needs back-label photo"],
+  src:"Photo 2 (left bottle), Nov 9, 2026."
+},
+{
+  n:8, type:"white", img:"assets/08-dupeuble-blanc.jpg",
+  name:"Domaine Dupeuble, Beaujolais Blanc 2023",
+  sub:"France, Beaujolais · 2023 on the label",
+  producer:"Domaine Dupeuble Père et Fils (since 1512) · Le Breuil",
+  grapes:"100% Chardonnay", abv:"13.5%", size:"750 ml", price:"~$24", score:90,
+  acid:4, tannin:0, mineral:4, body:3,
+  tldr:"White Burgundy energy at a Tuesday-night price, from a domaine older than most countries.",
+  fun:"Beaujolais is famous for red Gamay, but its white — Chardonnay grown on granite, schist, and golden limestone — is the quiet overachiever. Dupeuble has farmed here since 1512, works organically, and ferments with no added sulfur. Kermit Lynch calls it 'an outstanding, value-driven Chardonnay,' which in Kermit-speak means buy two. Green apple, citrus, a limey chalkiness, and a creamy edge from a touch of wood.",
+  notes:"Green apple, bright citrus, limey/chalky minerality, a touch of creaminess and lactic texture, wood-aged richness and spice.",
+  pairing:"Sautéed cod, snapper, sashimi, roast chicken, soft cheeses.", serve:"Chilled, 46–50°F.", drink:"Now–2028",
+  learn:"<b>Beaujolais Blanc is always Chardonnay.</b> Same grape as white Burgundy, different soil (granite instead of limestone) — which is why it tastes brighter and chalkier.",
+  tags:["White","Chardonnay","Organic","Natural","No added sulfur","Kermit Lynch","Value"],
+  src:"Kermit Lynch $24; JJ Buckley $23.94; Liquor Cave tasting note."
+},
+{
+  n:9, type:"white", img:"assets/09-aligote.jpg",
+  name:"Bourgogne Aligoté 'Les Reteurs' 2022",
+  sub:"France, Burgundy · 2022 on the label · producer on the back label",
+  producer:"Unknown — 'Les Reteurs' is the cuvée; producer name not on the front",
+  grapes:"100% Aligoté", abv:"Not visible", size:"750 ml", price:"~$30 (est.)", score:88,
+  acid:5, tannin:0, mineral:4, body:2,
+  tldr:"Burgundy's underdog white — all lemon, stone, and nervous energy, in the best way.",
+  fun:"Aligoté is Burgundy's other white grape — the one that spent a century being mixed with blackcurrant liqueur to make kir, because on its own it was considered too sharp. Then a group of growers called Les Aligoteurs decided it was actually great, and now it's the grape sommeliers get excited about. Expect high, mouthwatering acidity, green apple, citrus, and a stony finish. This one's from old vines, most likely, given the 'Les Reteurs' single-parcel name.",
+  notes:"Lemon and green apple, white flowers, flint and wet stone, saline finish, very fresh.",
+  pairing:"Oysters, goat cheese, sushi, anything fried, a kir if you're feeling traditional.", serve:"Well chilled, 45–48°F.", drink:"Now–2027",
+  learn:"<b>Aligoté vs Chardonnay:</b> same region, different grape. Aligoté is leaner, sharper, more mineral — Chardonnay's wiry little sibling.",
+  tags:["White","Aligoté","High acid","Mineral","Burgundy","Producer TBD"],
+  src:"Wineanorak / Wine Enthusiast on the Aligoté revival; price is an estimate for the category."
+},
+{
+  n:10, type:"red", img:"assets/10-diochon.jpg",
+  name:"Domaine Diochon, Moulin-à-Vent 'Vieilles Vignes' 2023",
+  sub:"France, Beaujolais (Cru Moulin-à-Vent) · 2023 on the label",
+  producer:"Domaine Diochon · Romanèche-Thorins",
+  grapes:"100% Gamay (old vines)", abv:"~13%", size:"750 ml", price:"~$29", score:91,
+  acid:4, tannin:2, mineral:4, body:3,
+  tldr:"The most serious Gamay in the fridge — dark, silky, and the one bottle allowed to wait.",
+  fun:"Moulin-à-Vent is the most muscular of Beaujolais's ten crus — the one that ages like a Burgundy and drinks like a secret. Diochon's old-vine version is deep and dark-fruited but still silky and low in tannin, earthy enough for bold flavors. Kermit Lynch calls it his Beaujolais 'for when the weather is still slightly cool.' This is the bottle to open when the food is rich and the evening is long — and the only red here that genuinely improves with a year or two in the fridge.",
+  notes:"Dark cherry and plum, violet, spice, earth, pink-granite minerality, silky texture.",
+  pairing:"Roast duck, pork chops, mushroom pasta, charcuterie, Thanksgiving dinner.", serve:"Cool, 55–60°F.", drink:"Now–2030 (best 2027–2029)",
+  learn:"<b>Cru Beaujolais</b> = the ten villages allowed to put their own name on the label. Moulin-à-Vent is the biggest and longest-lived of them.",
+  tags:["Red","Gamay","Cru Beaujolais","Old vines","Kermit Lynch","Age-worthy"],
+  src:"Kermit Lynch $29; K&L $25.99 (2024); Kermit Lynch newsletter tasting note."
+},
+{
+  n:11, type:"red", img:"assets/11-p-bouju.jpg",
+  name:"Patrick Bouju, 'P' Rouge",
+  sub:"France, Auvergne (Vin de France) · vintage not visible (current release 2023)",
+  producer:"Domaine La Bohème — Patrick Bouju & Justine Loiseau",
+  grapes:"90% Pinot Noir, 10% Gamay (2023)", abv:"13% (label; some listings 14%)", size:"750 ml", price:"~$41", score:92,
+  acid:4, tannin:2, mineral:5, body:3,
+  tldr:"Volcano Pinot Noir — cherry, flowers, and a whiff of campfire smoke from basalt soil.",
+  fun:"The label is just a giant letter P, a crescent moon, and a little temple on a hill — that's the Gergovie plateau, an ancient volcanic site above Clermont-Ferrand, and the temple is the real one up there. Bouju is a pioneer of natural wine in Auvergne: whole-cluster fermentation, no additives, grapes grown on black basalt. The result is Pinot Noir that tastes like cherry and flowers with a smoky, mineral edge — the most 'place' in any bottle here.",
+  notes:"Pure cherry and flowers, a hint of smoke, spice, volcanic minerality, silky and elegant.",
+  pairing:"Red meats, roast chicken, mushroom dishes, anything with a little char on it.", serve:"Cool, 55–60°F.", drink:"Now–2029",
+  learn:"<b>Basalt soil</b> = cooled lava. Volcanic soils give wines a smoky, salty, stony character you can actually taste — Auvergne is the place to learn it.",
+  tags:["Red","Pinot Noir","Natural","No added sulfur","Volcanic","Auvergne","Whole cluster"],
+  src:"Primal Wine $41; Marée Haute €22; Culinaries tasting note."
+},
+{
+  n:12, type:"red", img:"assets/12-glou-glou.jpg",
+  name:"Las Jaras, 'Glou Glou'",
+  sub:"USA, California (Mendocino County) · vintage not visible (current releases 2024–2025)",
+  producer:"Las Jaras Wines — Joel Burt & Eric Wareheim",
+  grapes:"Zinfandel-led blend with Carignan (blend varies by vintage)", abv:"13%", size:"750 ml", price:"~$28", score:89,
+  acid:4, tannin:2, mineral:2, body:2,
+  tldr:"The sound a wine makes when it's exactly what you wanted with pizza.",
+  fun:"Glou glou is French for the sound of wine being poured — glug glug, basically — and this is the bottle that named itself after it. A California project from winemaker Joel Burt and comedian Eric Wareheim, made from organically farmed old vines, mostly carbonic maceration (the Beaujolais trick), no added sulfites. Light, juicy, chillable, built for pizza, burgers, and BBQ. The label says it all, in yellow bubble letters.",
+  notes:"Red plum, raspberry, hibiscus, pomegranate, cocoa powder, playful spice on the finish.",
+  pairing:"Pizza, burgers, BBQ, BLTs, pasta with tomato sauce.", serve:"Slightly chilled, 55–60°F.", drink:"Now–2027",
+  learn:"<b>Carbonic maceration</b> = fermenting whole berries before crushing. It makes reds taste bright, fruity, and bubblegum-fresh — and it's why this wine is so crushable.",
+  tags:["Red","Chillable","Natural","No added sulfites","Carbonic","Organic","Pizza wine"],
+  src:"MYSA $29 (2024); K&L $22.95 (2025); DECANTsf $30 (2024)."
+},
+{
+  n:13, type:"rose", img:"assets/13-superbloom.jpg",
+  name:"Las Jaras, 'Superbloom'",
+  sub:"USA, California · vintage not visible (current release 2025)",
+  producer:"Las Jaras Wines — Joel Burt & Eric Wareheim",
+  grapes:"Carbonic co-ferment of red + white Rhône varieties (2024: Mourvèdre, Marsanne, Roussanne, Carignan, Viognier, Grenache blanc, Picpoul, Grenache Noir)", abv:"Not visible", size:"750 ml", price:"~$25", score:90,
+  acid:4, tannin:1, mineral:4, body:2,
+  tldr:"A zero-zero wine that can't decide if it's rosé or red, and is better for it.",
+  fun:"Named after the desert wildflower explosions that follow a wet winter, Superbloom is Las Jaras' zero-zero wine: nothing added, nothing taken away. Red and white Rhône grapes co-fermented with carbonic maceration, so it lands somewhere between rosé and light red — salted watermelon, rhubarb, white cherry, a little spice, a clean mineral finish. The rainbow label is not a gimmick; it's a warning that this wine refuses categories.",
+  notes:"Salted watermelon, rhubarb, white cherry, subtle herbal edge, spicy nose, clean mineral finish.",
+  pairing:"Grilled vegetables, salmon, picnic food, anything with herbs or a little spice.", serve:"Well chilled, 48–52°F.", drink:"Now–2027 (drink soon — zero-zero)",
+  learn:"<b>Zero-zero</b> means zero added, zero removed — no sulfur, no fining, no filtering. The most alive and most fragile style. Drink it while it's singing.",
+  tags:["Rosé / chillable red","Zero-zero","Natural","Carbonic","Organic","Co-ferment","Rainbow label"],
+  src:"K&L $22.95 (2025); Amster Wine $27.99; Spirit Animal tasting note (2024 grapes)."
+},
+{
+  n:14, type:"rose", img:"assets/14-la-araucaria.jpg",
+  name:"Dolores Cabrera, 'La Araucaria' Rosado",
+  sub:"Spain, Canary Islands (Tenerife, Valle de la Orotava) · vintage not visible (2023 listed by retailers)",
+  producer:"Dolores Cabrera Fernández",
+  grapes:"100% Listán Negro", abv:"12%", size:"750 ml", price:"~$30", score:91,
+  acid:5, tannin:1, mineral:5, body:2,
+  tldr:"A rosé from 100-year-old vines on a volcano, 80 miles from the Sahara. It tastes like it.",
+  fun:"The tree on the label is a real araucaria tree outside Dolores Cabrera's cellar in Tenerife, on the slopes of Mount Teide — a 12,000-foot volcano. Her Listán Negro vines are over 100 years old, grown organically in volcanic soil, trained in the traditional braided-cord style, and the grapes get just 12 hours of skin contact. The result is a salty, high-acid rosé with red fruit and a peppery kick. Vivino drinkers give it 3.9/5 — and for a wine this weird and wonderful, that's a badge of honor.",
+  notes:"Red fruit, salty minerality, peppery spice, high acidity, short clean finish.",
+  pairing:"Grilled fish, seafood, jamón, salty snacks, anything by the sea.", serve:"Well chilled, 45–50°F.", drink:"Now–2027",
+  learn:"<b>Listán Negro</b> grows almost nowhere except the Canary Islands. Volcanic soil + ocean air = salty minerality. If you remember one wine from this list, make it this one.",
+  tags:["Rosé","Listán Negro","Volcanic","Organic","Centenarian vines","Canary Islands","Salty"],
+  src:"Vivino 3.9/5 (411 ratings); Despaña $30 (2023); José Pastor Selections tech sheet."
+}
+];
+
+function dots(v){
+  if(v===null||v===undefined) return "—";
+  let s="";
+  for(let i=1;i<=5;i++) s+= i<=v ? "●" : "<span class='off'>○</span>";
+  return s;
+}
+function meter(label,v){
+  return `<div class="row"><span>${label}</span><span class="dots">${dots(v)}</span></div>`;
+}
+function card(w){
+  const isMyst = w.type==="mystery";
+  const score = w.score ? `<span class="badge">${w.score}/100</span>` : `<span class="badge myst">🔍 mystery</span>`;
+  const meters = (w.acid===null)
+    ? `<div class="meta">Acid / tannin / minerality: <b>unknown — to be discovered when it's identified.</b></div>`
+    : `<div class="meters">${meter("Acidity",w.acid)}${meter("Tannins",w.tannin)}${meter("Minerality",w.mineral)}${meter("Body",w.body)}</div>`;
+  return `<article class="card ${isMyst?'mystery':''}" data-type="${w.type}">
+    <div class="photo"><img src="${w.img}" alt="${w.name} bottle photo" loading="lazy"></div>
+    <div class="body">
+      <div class="eyebrow">#${w.n} · ${w.sub.split("·")[0].trim()}</div>
+      <h3>${w.name}</h3>
+      <div class="sub">${w.sub}<br>${w.producer}<br>${w.grapes} · ${w.abv} · ${w.size}</div>
+      <div class="tldr">TLDR — ${w.tldr}</div>
+      <div class="score">${score}<span class="price">${w.price}</span></div>
+      <p style="margin:0">${w.fun}</p>
+      ${meters}
+      <div><span class="label">Tasting notes</span><br>${w.notes}</div>
+      <div class="meta"><b>Pairing:</b> ${w.pairing}<br><b>Serve:</b> ${w.serve}<br><b>Drink:</b> ${w.drink}</div>
+      <div class="learn">🎓 ${w.learn}</div>
+      <div class="tags">${w.tags.map(t=>`<span>${t}</span>`).join("")}</div>
+      <div class="src">${w.src}</div>
+    </div>
+  </article>`;
+}
+const grid = document.getElementById("grid");
+grid.innerHTML = WINES.map(card).join("");
+document.getElementById("filters").addEventListener("click", e=>{
+  const b = e.target.closest("button"); if(!b) return;
+  document.querySelectorAll("#filters button").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on");
+  const f = b.dataset.f;
+  document.querySelectorAll(".card").forEach(c=>{
+    c.classList.toggle("hidden", f!=="all" && c.dataset.type!==f);
+  });
+});
+</script>
+</body>
+</html>
